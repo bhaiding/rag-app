@@ -1,0 +1,8 @@
+pymupdf
+sentence-transformers
+numpy
+faiss-cpu
+openai
+fastapi
+uvicorn
+python-multipart
