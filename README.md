@@ -1,8 +1,7 @@
 # AI Research Assistant
+This application allows users to efficiently prompt an AI with memory limited to the documents they provide it with. In safety-critical applications of AI like hospital or military usage, it is essential that the AI is only pulling information from ground-truth documents and not hallucinating an answer from its weights and biases. It utilizes Retrieval-Augmented Generation (RAG), which is an efficient system for turning chunks of documents into semantically relevant vectors to be compared against a prompt vector for similarity. The most similar chunks are then included in the prompt itself. The prompt is designed to require the LLM to only draw information from the provided chunks of text, and depending on the mode, cite where its getting its answers from.
 
-A full-stack Retrieval-Augmented Generation (RAG) application for querying multiple PDF documents with grounded answers, semantic retrieval, and source-aware evidence.
-
-The application lets users upload PDFs, ask questions across all indexed documents, and generate answers using only information retrieved from those documents. It supports two generation modes:
+It supports two generation modes:
 
 * **Evidence Mode** — requires citations and supporting quotes with filename and page number
 * **Grounded Mode** — answers using only information from the uploaded PDFs without requiring citations
