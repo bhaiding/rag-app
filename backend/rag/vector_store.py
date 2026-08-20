@@ -164,3 +164,39 @@ class VectorStore:
 
     def __len__(self) -> int:
         return self.index.ntotal
+    
+    def rebuild(
+        self,
+        embeddings: np.ndarray,
+        metadata: List[Dict],
+    ) -> None:
+        """
+        Replace the current FAISS index and metadata
+        with a newly rebuilt index.
+        """
+
+        if len(embeddings) != len(metadata):
+            raise ValueError(
+                "Number of embeddings must match number of metadata items."
+            )
+
+        if embeddings.ndim != 2:
+            raise ValueError(
+                "Embeddings must be a 2D NumPy array."
+            )
+
+        if embeddings.shape[1] != self.embedding_dim:
+            raise ValueError(
+                f"Expected embedding dimension {self.embedding_dim}, "
+                f"got {embeddings.shape[1]}."
+            )
+
+        embeddings = embeddings.astype(np.float32)
+
+        self.index = faiss.IndexFlatIP(
+            self.embedding_dim
+        )
+
+        self.index.add(embeddings)
+
+        self.metadata = metadata

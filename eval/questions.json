@@ -1,0 +1,142 @@
+[
+  {
+    "question": "What is the derivative intended to measure?",
+    "expected_filename": "Calculus.pdf"
+  },
+  {
+    "question": "What is the relationship between differentiation and integration?",
+    "expected_filename": "Calculus.pdf"
+  },
+  {
+    "question": "What does a definite integral represent geometrically?",
+    "expected_filename": "Calculus.pdf"
+  },
+  {
+    "question": "How is a limit used in the definition of a derivative?",
+    "expected_filename": "Calculus.pdf"
+  },
+  {
+    "question": "What is the chain rule used for?",
+    "expected_filename": "Calculus.pdf"
+  },
+  {
+    "question": "Why is logistic regression used for classification rather than ordinary linear regression?",
+    "expected_filename": "Logistic_Regression.pdf"
+  },
+  {
+    "question": "What range of values does the sigmoid function output?",
+    "expected_filename": "Logistic_Regression.pdf"
+  },
+  {
+    "question": "How does logistic regression convert a probability into a class prediction?",
+    "expected_filename": "Logistic_Regression.pdf"
+  },
+  {
+    "question": "What type of decision boundary does standard logistic regression learn?",
+    "expected_filename": "Logistic_Regression.pdf"
+  },
+  {
+    "question": "What loss function is commonly used to train logistic regression?",
+    "expected_filename": "Logistic_Regression.pdf"
+  },
+  {
+    "question": "Why are convolutional neural networks particularly useful for images?",
+    "expected_filename": "CNN.pdf"
+  },
+  {
+    "question": "What does a convolutional filter learn?",
+    "expected_filename": "CNN.pdf"
+  },
+  {
+    "question": "What is the purpose of pooling in a CNN?",
+    "expected_filename": "CNN.pdf"
+  },
+  {
+    "question": "How does parameter sharing reduce the number of parameters in a CNN?",
+    "expected_filename": "CNN.pdf"
+  },
+  {
+    "question": "How do features learned in early CNN layers generally differ from features learned in deeper layers?",
+    "expected_filename": "CNN.pdf"
+  },
+  {
+    "question": "What makes a recurrent neural network suitable for sequential data?",
+    "expected_filename": "RNN.pdf"
+  },
+  {
+    "question": "What information does the hidden state of an RNN represent?",
+    "expected_filename": "RNN.pdf"
+  },
+  {
+    "question": "Why can basic RNNs have difficulty learning long-term dependencies?",
+    "expected_filename": "RNN.pdf"
+  },
+  {
+    "question": "How does an RNN differ from a standard feed-forward neural network?",
+    "expected_filename": "RNN.pdf"
+  },
+  {
+    "question": "What does backpropagation through time do?",
+    "expected_filename": "RNN.pdf"
+  },
+  {
+    "question": "What mechanism allows a Transformer to relate different positions in a sequence?",
+    "expected_filename": "Transformer.pdf"
+  },
+  {
+    "question": "Why do Transformers need positional information?",
+    "expected_filename": "Transformer.pdf"
+  },
+  {
+    "question": "What are queries, keys, and values used for in attention?",
+    "expected_filename": "Transformer.pdf"
+  },
+  {
+    "question": "What advantage do Transformers have over traditional RNNs during training?",
+    "expected_filename": "Transformer.pdf"
+  },
+  {
+    "question": "What is multi-head attention intended to achieve?",
+    "expected_filename": "Transformer.pdf"
+  },
+  {
+    "question": "Which architecture maintains a recurrent hidden state across sequence positions?",
+    "expected_filename": "RNN.pdf"
+  },
+  {
+    "question": "Which model uses self-attention instead of recurrence to model relationships between tokens?",
+    "expected_filename": "Transformer.pdf"
+  },
+  {
+    "question": "Which method produces a probability for binary classification using a sigmoid function?",
+    "expected_filename": "Logistic_Regression.pdf"
+  },
+  {
+    "question": "Which architecture uses learned kernels that are reused across spatial positions?",
+    "expected_filename": "CNN.pdf"
+  },
+  {
+    "question": "Which document discusses vanishing gradients in the context of sequential information?",
+    "expected_filename": "RNN.pdf"
+  },
+  {
+    "question": "Which architecture can process many sequence positions in parallel rather than processing them recurrently?",
+    "expected_filename": "Transformer.pdf"
+  },
+  {
+    "question": "Which model is likely to learn edges and textures in its early layers?",
+    "expected_filename": "CNN.pdf"
+  },
+  {
+    "question": "Which technique learns a linear boundary but outputs a nonlinear probability?",
+    "expected_filename": "Logistic_Regression.pdf"
+  },
+  {
+    "question": "Which document explains derivatives and limits rather than machine-learning architectures?",
+    "expected_filename": "Calculus.pdf"
+  },
+  {
+    "question": "Which architecture would be most directly associated with attention heads?",
+    "expected_filename": "Transformer.pdf"
+  }
+]

@@ -1,13 +1,23 @@
 import { useEffect, useState } from "react";
+
 import {
   askQuestion,
+  deleteDocument,
   getDocuments,
   uploadDocument,
 } from "./api";
 
+import UploadPanel from "./components/UploadPanel";
+import DocumentList from "./components/DocumentList";
+import ChatBox from "./components/ChatBox";
+import SourceList from "./components/SourceList";
+
+
 function App() {
   const [documents, setDocuments] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
+
+  const [mode, setMode] = useState("evidence");
 
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
@@ -15,20 +25,47 @@ function App() {
 
   const [uploading, setUploading] = useState(false);
   const [asking, setAsking] = useState(false);
+
   const [error, setError] = useState("");
+
+  const [deletingFilename, setDeletingFilename] =
+    useState(null);
+
 
   async function loadDocuments() {
     try {
       const data = await getDocuments();
+
       setDocuments(data.documents);
     } catch (err) {
       setError(err.message);
     }
   }
 
+
+  async function handleDelete(filename) {
+    try {
+      setError("");
+      setDeletingFilename(filename);
+
+      await deleteDocument(filename);
+
+      await loadDocuments();
+
+      setAnswer("");
+      setSources([]);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setDeletingFilename(null);
+    }
+  }
+
+
   useEffect(() => {
     loadDocuments();
   }, []);
+
 
   async function handleUpload() {
     if (!selectedFile) {
@@ -41,6 +78,7 @@ function App() {
       setUploading(true);
 
       await uploadDocument(selectedFile);
+
       setSelectedFile(null);
 
       await loadDocuments();
@@ -51,10 +89,13 @@ function App() {
     }
   }
 
+
   async function handleQuestion(event) {
     event.preventDefault();
 
-    if (!question.trim()) {
+    const trimmedQuestion = question.trim();
+
+    if (!trimmedQuestion) {
       setError("Enter a question.");
       return;
     }
@@ -62,10 +103,14 @@ function App() {
     try {
       setError("");
       setAsking(true);
+
       setAnswer("");
       setSources([]);
 
-      const data = await askQuestion(question);
+      const data = await askQuestion(
+        trimmedQuestion,
+        mode,
+      );
 
       setAnswer(data.answer);
       setSources(data.sources);
@@ -76,103 +121,58 @@ function App() {
     }
   }
 
+
   return (
-    <main>
-      <h1>AI Research Assistant</h1>
+    <div className="app-shell">
+      <header className="app-header">
+        <div>
+          <h1>AI Research Assistant</h1>
 
-      <section>
-        <h2>Upload Documents</h2>
+          <p>
+            Upload research papers and ask questions across your documents.
+          </p>
+        </div>
+      </header>
 
-        <input
-          type="file"
-          accept=".pdf"
-          onChange={(event) => {
-            setSelectedFile(event.target.files[0]);
-          }}
-        />
-
-        <button
-          onClick={handleUpload}
-          disabled={uploading}
-        >
-          {uploading ? "Uploading..." : "Upload PDF"}
-        </button>
-      </section>
-
-      <section>
-        <h2>Uploaded Documents</h2>
-
-        {documents.length === 0 ? (
-          <p>No documents uploaded.</p>
-        ) : (
-          <ul>
-            {documents.map((document) => (
-              <li key={document.filename}>
-                {document.filename} — {document.pages} pages —{" "}
-                {document.chunks} chunks
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-
-      <section>
-        <h2>Ask a Question</h2>
-
-        <form onSubmit={handleQuestion}>
-          <input
-            type="text"
-            value={question}
-            placeholder="Ask something about your documents..."
-            onChange={(event) => {
-              setQuestion(event.target.value);
-            }}
+      <div className="app-layout">
+        <aside className="sidebar">
+          <UploadPanel
+            selectedFile={selectedFile}
+            setSelectedFile={setSelectedFile}
+            handleUpload={handleUpload}
+            uploading={uploading}
           />
 
-          <button
-            type="submit"
-            disabled={asking}
-          >
-            {asking ? "Thinking..." : "Ask"}
-          </button>
-        </form>
-      </section>
+          <DocumentList
+            documents={documents}
+            handleDelete={handleDelete}
+            deletingFilename={deletingFilename}
+          />
+        </aside>
 
-      {error && (
-        <section>
-          <p>{error}</p>
-        </section>
-      )}
-
-      {answer && (
-        <section>
-          <h2>Answer</h2>
-          <p>{answer}</p>
-        </section>
-      )}
-
-      {sources.length > 0 && (
-        <section>
-          <h2>Sources</h2>
-
-          {sources.map((source, index) => (
-            <div key={`${source.filename}-${source.chunk_id}`}>
-              <h3>Source {index + 1}</h3>
-
-              <p>
-                {source.filename} — Page {source.page}
-              </p>
-
-              <p>
-                Similarity: {source.score.toFixed(3)}
-              </p>
-
-              <p>{source.text}</p>
+        <main className="main-content">
+          {error && (
+            <div className="error-message">
+              {error}
             </div>
-          ))}
-        </section>
-      )}
-    </main>
+          )}
+
+          <ChatBox
+            question={question}
+            setQuestion={setQuestion}
+            handleQuestion={handleQuestion}
+            asking={asking}
+            answer={answer}
+            mode={mode}
+            setMode={setMode}
+          />
+
+          <SourceList
+            sources={sources}
+          />
+        </main>
+      </div>
+    </div>
   );
 }
 

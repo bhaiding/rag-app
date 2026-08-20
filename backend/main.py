@@ -110,6 +110,7 @@ uploaded_documents = build_uploaded_documents(vector_store)
 
 class QueryRequest(BaseModel):
     question: str
+    mode: str = "evidence"
 
 
 @app.get("/")
@@ -232,9 +233,19 @@ def query_documents(request: QueryRequest):
     if generator is None:
         generator = Generator()
 
+    if request.mode not in {
+        "evidence",
+        "grounded",
+    }:
+        raise HTTPException(
+            status_code=400,
+            detail="Mode must be 'evidence' or 'grounded'.",
+    )
+
     answer = generator.generate_answer(
         question,
         results,
+        mode=request.mode,
     )
 
     sources = []
@@ -252,9 +263,10 @@ def query_documents(request: QueryRequest):
 
     return {
         "question": question,
+        "mode": request.mode,
         "answer": answer,
         "sources": sources,
-    }
+}
 
 
 @app.get("/documents")
@@ -267,4 +279,103 @@ def get_documents():
             if vector_store is not None
             else 0
         ),
+    }
+
+@app.delete("/documents/{filename}")
+def delete_document(filename: str):
+    global vector_store
+    global retriever
+    global uploaded_documents
+
+    if vector_store is None:
+        raise HTTPException(
+            status_code=404,
+            detail="No documents are currently indexed.",
+        )
+
+    remaining_metadata = [
+        item
+        for item in vector_store.metadata
+        if item.get("filename") != filename
+    ]
+
+    removed_count = (
+        len(vector_store.metadata)
+        - len(remaining_metadata)
+    )
+
+    if removed_count == 0:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Document not found: {filename}",
+        )
+
+    # If no documents remain, remove the saved index entirely
+    if not remaining_metadata:
+        vector_store = None
+        retriever = None
+        uploaded_documents = []
+
+        if FAISS_INDEX_PATH.exists():
+            FAISS_INDEX_PATH.unlink()
+
+        if METADATA_PATH.exists():
+            METADATA_PATH.unlink()
+
+        file_path = UPLOAD_DIR / filename
+
+        if file_path.exists():
+            file_path.unlink()
+
+        return {
+            "filename": filename,
+            "chunks_removed": removed_count,
+            "total_vectors": 0,
+            "message": "Document deleted successfully.",
+        }
+
+    # Re-embed remaining chunks
+    remaining_texts = [
+        item["text"]
+        for item in remaining_metadata
+    ]
+
+    embeddings = embedding_model.embed_texts(
+        remaining_texts
+    )
+
+    # Rebuild FAISS
+    vector_store.rebuild(
+        embeddings,
+        remaining_metadata,
+    )
+
+    # Save rebuilt index
+    vector_store.save(
+        FAISS_INDEX_PATH,
+        METADATA_PATH,
+    )
+
+    # Rebuild retriever
+    retriever = Retriever(
+        embedding_model=embedding_model,
+        vector_store=vector_store,
+    )
+
+    # Rebuild document list
+    uploaded_documents = build_uploaded_documents(
+        vector_store
+    )
+
+    # Delete original PDF file from uploads
+    file_path = UPLOAD_DIR / filename
+
+    if file_path.exists():
+        file_path.unlink()
+
+    return {
+        "filename": filename,
+        "chunks_removed": removed_count,
+        "total_vectors": len(vector_store),
+        "message": "Document deleted successfully.",
     }
